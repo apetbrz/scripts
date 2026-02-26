@@ -1,0 +1,4 @@
+#!/bin/sh
+
+# put all wallpapers into that dir -----------------v
+feh --no-fehbg --bg-fill --randomize ~/pictures/wallpapers/*

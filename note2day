@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+
+# Arthur Petroff - 2025
+
+ARG=$1
+[[ $ARG == "-h" || $ARG == "--help" ]] && {
+    echo """note2day
+
+usage: 
+note2day              uses today's date
+note2day [date]       uses given date"""
+    exit 0
+}
+
+DATE=$([[ -n $ARG ]] && date -d $1 -I || date -I)
+
+DIRNAME="$HOME/documents/notes/$(date -d $DATE +%Y-%m)"
+[ -e $DIRNAME ] || mkdir -pv $DIRNAME
+
+FILENAME="$DIRNAME/$(date -d $DATE +%m-%d).md"
+[ -f "$FILENAME" ] || (
+    notify-send -u normal -t 60000 "good morning!" "$(fortune)" &
+    notify-send -u low -t 3000 "i love you"
+
+    echo """$(date -d $DATE +'%A, %e %B, %Y')
+
+Goals for the day:
+- [ ] """ >>$FILENAME
+)
+
+$EDITOR $FILENAME

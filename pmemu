@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+# i'm not actually sure this is accurate...
+
+echo "this is likely incorrect..."
+
+pid=$(pgrep -ofi $1)
+ps -o comm,pid,rss= --no-headers -g $(ps -o sid= -p $pid) | awk '{sum += $3} {print $1,":",$2,"-",$3/1024,"MiB"} END {print "Total:",sum/1024,"MiB"}'

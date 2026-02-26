@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+
+# This script is personalized to my setup!
+# Incredibly *not* portable!!
+
+clone_from=DP-0
+tv=HDMI-1
+right_of=HDMI-0
+
+on() {
+    xrandr --output $tv --mode 3840x2160 --right-of $right_of
+    1>/dev/null
+    notify-send "tv on!"
+}
+
+clone() {
+    xrandr --output $tv --mode 1920x1080 --same-as $clone_from
+    notify-send "tv mirror on!"
+}
+
+off() {
+    xrandr --output $tv --off
+    notify-send "tv off!"
+}
+
+if xrandr | grep "$tv connected (" 1>/dev/null; then
+    [[ $1 = "--mirror" ]] && clone || on
+    fehbg
+else
+    off
+fi

@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+# loopkey
+# presses a key over and over, using xdotool
+# tl;dr: autoclicker for keyboard inputs
+
+set -ex
+
+if ! command -v xdotool > /dev/null 2>&1; then
+    echo "
+depends on xdotool, please install"
+	exit 2
+fi
+
+[[ -z $1 ]] && echo "
+usage:
+loopkey [WINDOWNAME] [KEY] {REPEAT DELAY (ms), default 1000} {REPEAT COUNT}
+
+uses xdotool
+WINDOWNAME is passed to xdotool search --name
+KEY is passed to xdotool key" && exit 1
+
+WID=$(xdotool search --name $1 | head -n 1)
+xdotool windowactivate $WID
+xdotool key ${4:+--repeat $4 }--repeat-delay ${3:-1000} $2

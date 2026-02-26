@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+# bconv
+# Byte CONVerter
+#
+# uses bcal (Byte CALculator) to convert byte values from one storage unit to another
+
+[[ -z $1 ]] && echo "usage:
+    bconv [storage amount, with unit] [target unit]
+i.e.
+    bconv 4GiB MiB
+    bconv 13107200B MiB" && exit 1
+
+BCALOUT="$(bcal $1 | rg --color=never -e "B$" | awk --bignum "{ printf \"%.32g \", \$1 } { print \$2 }")"
+MAXW=$(echo "$BCALOUT" | wc -L)
+echo "$BCALOUT" | rg --color=never -e "${2}$" | awk "{ printf \"%*s \", $MAXW, \$1 } { print \$2 }"

@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+[[ -z $1 ]] && echo "vat
+
+like cat, but versatile. it uses:
+
+blackcat  for image viewing
+bat       for every other file type
+
+arguments to vat are passed
+transparently through to these programs
+
+depends on these programs
+https://github.com/j-c-m/blackcat
+https://github.com/sharkdp/bat" && exit 1
+
+blackcat $@ 2>/dev/null || bat -p $@

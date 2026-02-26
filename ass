@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+
+# Arthur's ScreenShots
+# (i got a little silly naming it)
+#
+# takes a screenshot using maim (passing all arguments to it), and allows the user to opt-out of saving it to disk
+
+# setup
+FILENAME=$(date -Iseconds).png
+TMPDIR=/tmp/
+OUTDIR=$HOME/screenshots/
+
+# take the screenshot, save in ram (tmpfs) and clipboard
+maim -q $@ | tee $TMPDIR$FILENAME | xclip -selection clipboard -t image/png
+
+# check if the screenshot was actually taken
+if [[ -f $TMPDIR$FILENAME ]]; then
+
+    # click notification -> outputs 2
+    # notification timeout -> outputs 1
+    # middle click notification -> outputs 0 ("label" of -A)
+    # 0 == true
+
+    DELETEFILE=$(dunstify -a "ass" -A "0,deletefile" -t 5000 \
+        "Screenshot saved and copied to clipboard. Middle-click to delete it!" \
+        "$FILENAME")
+
+    if [[ $DELETEFILE = 0 ]]; then
+        rm $TMPDIR$FILENAME
+        dunstify -t 2500 "File Erased!" "$TMPDIR$FILENAME"
+    else
+        mv $TMPDIR$FILENAME $OUTDIR$FILENAME
+        dunstify -t 2500 "File Saved!" "$OUTDIR$FILENAME"
+    fi
+else
+    dunstify -t 2500 "screenshot canceled!"
+fi
