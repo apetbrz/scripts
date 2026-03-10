@@ -5,13 +5,21 @@
 #
 # takes a screenshot using maim (passing all arguments to it), and allows the user to opt-out of saving it to disk
 
+set -o pipefail
+
 # setup
-FILENAME=$(date -Iseconds).png
+FILENAME=$(date -Iseconds).jpg
 TMPDIR=/tmp/
 OUTDIR=$HOME/screenshots/
 
 # take the screenshot, save in ram (tmpfs) and clipboard
-maim -q $@ | tee $TMPDIR$FILENAME | xclip -selection clipboard -t image/png
+if [[ $1 = "select" ]]; then
+	slurp | grim -t jpeg -g - $TMPDIR$FILENAME && wl-copy -p < $TMPDIR$FILENAME
+elif [[ $1 = "focused" ]]; then
+	notify-send "focused window not yet supported :P" && exit
+else
+	grim -t jpeg -c $TMPDIR$FILENAME && wl-copy -p < $TMPDIR$FILENAME
+fi
 
 # check if the screenshot was actually taken
 if [[ -f $TMPDIR$FILENAME ]]; then
@@ -21,17 +29,17 @@ if [[ -f $TMPDIR$FILENAME ]]; then
     # middle click notification -> outputs 0 ("label" of -A)
     # 0 == true
 
-    DELETEFILE=$(dunstify -a "ass" -A "0,deletefile" -t 5000 \
-        "Screenshot saved and copied to clipboard. Middle-click to delete it!" \
+    DELETEFILE=$(dunstify -a "ass" -A "0,Delete File" -t 5000 \
+        "Screenshot saved and copied to clipboard. Keep it?" \
         "$FILENAME")
 
     if [[ $DELETEFILE = 0 ]]; then
         rm $TMPDIR$FILENAME
-        dunstify -t 2500 "File Erased!" "$TMPDIR$FILENAME"
+        dunstify -a "ass" -t 2500 "File Erased!" "$TMPDIR$FILENAME"
     else
         mv $TMPDIR$FILENAME $OUTDIR$FILENAME
-        dunstify -t 2500 "File Saved!" "$OUTDIR$FILENAME"
+        dunstify -a "ass" -t 2500 "File Saved!" "$OUTDIR$FILENAME"
     fi
 else
-    dunstify -t 2500 "screenshot canceled!"
+    dunstify -a "ass" -t 2500 "screenshot canceled!"
 fi
