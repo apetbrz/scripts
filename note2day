@@ -19,9 +19,7 @@ DIRNAME="$HOME/documents/notes/$(date -d $DATE +%Y-%m)"
 
 FILENAME="$DIRNAME/$(date -d $DATE +%m-%d).md"
 [ -f "$FILENAME" ] || (
-    notify-send -u normal -t 60000 "good morning!" "$(fortune)" &
-    notify-send -u low -t 3000 "i love you"
-
+    notify-send -u normal -t 60000 "good morning!" "i love you" &
     echo """$(date -d $DATE +'%A, %e %B, %Y')
 
 Goals for the day:
