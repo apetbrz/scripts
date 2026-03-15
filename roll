@@ -1,0 +1,50 @@
+#! /usr/bin/env bash
+
+[ -z $1 ] && echo "roll
+
+usage:
+	roll [OPTIONS]...
+
+where OPTIONS is one of:
+	  dX = an X sided die
+	 NdX = N rolls of an X sided die
+	   X = a flat N added to the total" && exit 1
+
+rolls=()
+
+# takes one or two parameters:
+# roll int X       : roll one dX
+# roll int N int X : roll NdX
+roll() {
+    if [[ -n $2 ]]; then
+        die=$2
+        n=$1
+    else
+        die=$1
+        declare n=1
+    fi
+
+    # TODO: batch multi rolls :P
+    for x in $(seq 1 $n); do
+        roll=$(shuf -i 1-$die -n 1)
+        rolls+="$roll "
+        echo "    $roll$([[ $roll == $die ]] && echo "   ⭑ crit ⭑")$([[ $roll == "1" ]] && echo "    ! fail !")"
+    done
+}
+
+# iterate thru inputs
+while (($#)); do
+    # match input
+    case $1 in
+    # dX
+    "d"*) echo " $1" && roll $(echo $1 | sed "s/d//") ;;
+    # NdX
+    *"d"*) echo $1 && roll $(echo $1 | sed "s/d/ /") ;;
+    # flat number
+    *) echo " +$1" && rolls+="$1 " ;;
+    esac
+    # next input
+    shift
+done
+
+echo "total: $(expr $(echo ${rolls[@]} | sed 's/ / + /g'))"
