@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+if [[ $1 = "select" ]]; then
+	flameshot gui
+elif [[ $1 = "focused" ]]; then
+	# flameshot has no focused window support natively
+	. <(xdotool getwindowfocus getwindowgeometry --shell)
+	flameshot full --region "$WIDTH"x"$HEIGHT"+"$X"+"$Y"
+elif [[ $1 = "full" ]]; then
+	flameshot full
+else
+	flameshot screen
+fi
