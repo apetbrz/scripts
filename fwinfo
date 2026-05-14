@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+read -r SELMON REST < <(mmsg -g -o | rg 'selmon 1')
+
+declare -A TOAST_INFO
+
+while read -r MON KEY DATA; do
+	TOAST_INFO[$KEY]=$DATA
+done < <(mmsg -g -c | rg "$SELMON")
+
+qs -c noctalia-shell ipc call toast send "{\"title\": \"${TOAST_INFO[appid]}\", \"body\": \"${TOAST_INFO[title]}\", \"icon\": \"search\"}"
